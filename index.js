@@ -1,4 +1,13 @@
+import React, {Component} from 'react';
 import { AppRegistry } from 'react-native';
-import BlinkApp from './js/page/BlinkApp';
+import StackNav from './js/page/Mainframe';
 
-AppRegistry.registerComponent('search', () => BlinkApp);
+export default class app_framework extends Component {
+  render() {
+    return (
+        <StackNav />
+    );
+  }
+}
+
+AppRegistry.registerComponent('search', () => app_framework);
