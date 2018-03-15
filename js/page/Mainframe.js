@@ -1,14 +1,20 @@
 import React from 'react';
-import { View, Text, Button, Image } from 'react-native';
-import { StackNavigator } from 'react-navigation';
+import { Text, View, Button } from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import { TabNavigator, TabBarBottom, StackNavigator } from 'react-navigation';
 
-class LogoTitle extends React.Component {
+class DetailsScreen extends React.Component {
+	static navigationOptions = ({ navigation }) => {
+		const { params } = navigation.state;
+		return {
+			title: params ? params.title : 'unknow page',
+		}
+	}
   render() {
     return (
-      <Image
-        source={require('./logo.jpg')}
-        style={{ width: 30, height: 30 }}
-      />
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>Details!</Text>
+      </View>
     );
   }
 }
@@ -19,36 +25,16 @@ class HomeScreen extends React.Component {
 
 		return {
 		   	headerTitle: 'Home',
-		   	headerRight: (
-		      <Button onPress={ params.sayHello } title="say" color="#ccc" />
-		    ),
 		};
 	}
-	componentWillMount() {
-	    this.props.navigation.setParams({ sayHello: this._sayHello });
-	  }
-
-	  state = {
-	    count: 0,
-	  };
-
-	  _sayHello = () => {
-	  	alert('hello');
-	  }
-	  _increaseCount = () => {
-
-	    this.setState({ count: this.state.count + 1 });
-	  };
   render() {
     return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: 'red', }}>
-        <Text>Home Screen</Text>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>Home!</Text>
         <Button
           title="Go to Details"
-          onPress={() => this.props.navigation.navigate('Profile', {
-          	itemId: 86,
-          	description: 'my face is red',
-          	title: 'Profile Update'
+          onPress={() => this.props.navigation.navigate('Details', {
+          	title: 'Home Details'
           })}
         />
       </View>
@@ -56,58 +42,117 @@ class HomeScreen extends React.Component {
   }
 }
 
-class ProfileScreen extends React.Component {
-	static navigationOptions = ({navigation, navigationOptions}) => {
-		const { params } = navigation.state;
+class SettingsScreen extends React.Component {
+	static navigationOptions = ({ navigation }) => {
 
 		return {
-			title: params ? params.title : 'cannot page',
+			title: 'Settings',
 		}
-	} 
+	}
   render() {
-
-  	const {params} = this.props.navigation.state;
-  	const itemId = params ? params.itemId : null;
-  	const description = params ? params.description : null;
-
     return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: 'blue', }}>
-        <Text>Profile Screen</Text>
-        <Text>itemId: {JSON.stringify(itemId)}</Text>
-        <Text>otherParam: {JSON.stringify(description)}</Text>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>Settings!</Text>
         <Button
-          title="Go to Home... again"
-          onPress={() => this.props.navigation.navigate('Home')}
-        />
-        <Button
-          title="Go back"
-          onPress={() => this.props.navigation.goBack()}
+          title="Go to Details"
+          onPress={() => this.props.navigation.navigate('Details', {
+          	title: "Settings Details"
+          })}
         />
       </View>
     );
   }
 }
 
-
-
-const StackNav = StackNavigator({
-  Home: {
-    screen: HomeScreen,
-  },
-  Profile: {
-  	screen: ProfileScreen,
+class MessageScreen extends React.Component {
+  render() {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>Message!</Text>
+      </View>
+    );
   }
+}
+
+class CartScreen extends React.Component {
+  render() {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>Cart!</Text>
+      </View>
+    );
+  }
+}
+
+const HomeStack = StackNavigator({
+	Home: { screen: HomeScreen },
+  	Details: { screen: DetailsScreen },
 },
-  {
-    initialRouteName: 'Home',
-    navigationOptions: {
-      headerStyle: {
-        backgroundColor: '#f4511e',
-      },
-      headerTintColor: '#fff',
-      headerTitleStyle: {
-        fontWeight: 'bold',
-      },
-    },
-  });
-export default StackNav;
+{
+	initialRouteName: 'Home',
+	navigationOptions: {
+	  headerStyle: {
+	    backgroundColor: '#f4511e',
+	  },
+	  headerTintColor: '#fff',
+	  headerTitleStyle: {
+	    fontWeight: 'bold',
+	  },
+	},
+}
+)
+
+const SettingsStack = StackNavigator({
+  Settings: { screen: SettingsScreen },
+  Details: { screen: DetailsScreen },
+},
+{
+	initialRouteName: 'Settings',
+	navigationOptions: {
+	  headerStyle: {
+	    backgroundColor: '#f4511e',
+	  },
+	  headerTintColor: '#fff',
+	  headerTitleStyle: {
+	    fontWeight: 'bold',
+	  },
+	},
+}
+);
+
+
+
+export default TabNavigator(
+{
+  Home: { screen: HomeStack },
+  Message: { screen: MessageScreen },
+  Cart: { screen: CartScreen },
+  Settings: { screen: SettingsStack },
+},
+{
+	navigationOptions: ({ navigation }) => ({
+	  tabBarIcon: ({ focused, tintColor }) => {
+	    const { routeName } = navigation.state;
+	    let iconName;
+	    if (routeName === 'Home') {
+	      iconName = `ios-home${focused ? '' : '-outline'}`;
+	    } else if (routeName === 'Settings') {
+	      iconName = `ios-person${focused ? '' : '-outline'}`;
+	    } else if ( routeName === 'Message') {
+	    	iconName = `ios-chatbubbles${focused ? '' : '-outline'}`;
+	    } else if ( routeName === 'Cart') {
+	    	iconName = `ios-cart${focused ? '' : '-outline'}`;
+	    }
+	    return <Ionicons name={iconName} size={25} color={tintColor} />;
+	  },
+	}),
+	tabBarOptions: {
+	  activeTintColor: 'tomato',
+	  inactiveTintColor: 'gray',
+	},
+	tabBarComponent: TabBarBottom,
+	tabBarPosition: 'bottom',
+	animationEnabled: false,
+	swipeEnabled: false,
+	}
+);
